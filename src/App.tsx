@@ -1,47 +1,15 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 
-type Colors = {
-    colors: string[];
-};
+import { useGetColors } from "./hooks/useGetColors";
+import { useGetHistory } from "./hooks/useGetHistory";
 
 function App() {
-    const [score, setScore] = useState<number>(0);
-    const [highest, setHighest] = useState<number>(() => {
-        const storedHighest = localStorage.getItem("highest");
-        return storedHighest ? parseInt(storedHighest) : 0;
-    });
-
-    const colors = [
-        "#C90F57",
-        "#C2F78C",
-        "#16D505",
-        "#00FF00",
-        "#FFFF00",
-        "#FF6347",
-        "#FF1493",
-        "#FFA500",
-        "#8A2BE2",
-        "#FF00FF",
-        "#00CED1",
-        "#7CFC00",
-        "#FFD700",
-        "#FF4500",
-        "#008080",
-        "#4B0082",
-        "#FF69B4",
-        "#FFB6C1",
-        "#7FFF00",
-        "#00FFFF",
-    ];
-
-    const [options, setOptions] = useState<Colors>({
-        colors,
-    });
+    const { options, chooseThree, currentChoice, colors } = useGetColors();
+    const { score, setScore, setHighest, highest } = useGetHistory();
 
     const [correct, setCorrect] = useState<boolean>(false);
     const [isWaiting, setIsWaiting] = useState<boolean>(true);
-    const [currentChoice, setCurrentChoice] = useState<string>("");
 
     const handelColorChoice = (colorChoice: string) => {
         setIsWaiting(false);
@@ -63,25 +31,6 @@ function App() {
             setIsWaiting(true);
         }, 5000);
     };
-
-    function chooseThree(options: string[]) {
-        const theThree = [];
-        const copyOptions = [...options];
-
-        for (let i = 0; i < 3; i++) {
-            const randomIndex = Math.floor(Math.random() * copyOptions.length);
-            theThree.push(copyOptions[randomIndex]);
-            copyOptions.splice(randomIndex, 1);
-        }
-
-        setOptions({ colors: theThree });
-        chooseOne(theThree);
-    }
-
-    function chooseOne(options: string[]) {
-        const randomIndex = Math.floor(Math.random() * options.length);
-        setCurrentChoice(options[randomIndex]);
-    }
 
     useEffect(() => {
         chooseThree(colors);
